@@ -1,4 +1,6 @@
-package main;
+package main.entity;
+
+import main.PaymentType;
 
 import java.util.List;
 
