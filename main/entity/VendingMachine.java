@@ -9,6 +9,10 @@ public class VendingMachine {
     private Product selectedProduct;
     private List<ProductShelf> productShelfList;
 
+    public VendingMachine(List<ProductShelf> productShelfList) {
+        this.productShelfList = productShelfList;
+    }
+
     public Product selectProduct(int shelfId){
 
         if(shelfId < 0 || shelfId > productShelfList.size()){
@@ -28,7 +32,7 @@ public class VendingMachine {
         return selectedProduct;
     }
 
-    void makePayment(double amount, PaymentType type){
+    public void makePayment(double amount, PaymentType type){
         boolean paymentSuccess  = type.processPayment(amount);
         if (paymentSuccess){
             System.out.println("Payment of $" + amount + " successful using " +

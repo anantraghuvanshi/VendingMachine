@@ -40,7 +40,7 @@ public class ProductShelf {
         }
     }
 
-    void addProduct(Product product, int productCount){
+    public void addProduct(Product product, int productCount){
         this.product = product;
         this.productCount = productCount;
     }
