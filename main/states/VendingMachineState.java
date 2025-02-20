@@ -4,7 +4,7 @@ import main.PaymentType;
 import main.exceptions.PaymentFailedException;
 import main.exceptions.SoldOutException;
 
-public interface VendingMachineInterface {
+public interface VendingMachineState {
 
     void selectProduct(int shelfId) throws SoldOutException;
     void insertCoin(double amount);
