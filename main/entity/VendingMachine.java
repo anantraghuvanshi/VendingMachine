@@ -1,6 +1,7 @@
 package main.entity;
 
 import main.PaymentType;
+import main.states.HasMoneyState;
 import main.states.NoMoneyState;
 import main.states.VendingMachineState;
 
@@ -52,10 +53,6 @@ public class VendingMachine {
     public void resetTransaction() {
         this.currentBalance = 0;
         this.selectedProduct = null;
-    }
-
-    public VendingMachine(List<ProductShelf> productShelfList) {
-        this.productShelfList = productShelfList;
     }
 
     public Product retrieveProduct(int shelfId){
@@ -110,7 +107,20 @@ public class VendingMachine {
         }
     }
 
-    private void dispenseProduct(){
+    public void dispenseProduct(){
         System.out.println("Dispensing product: " + selectedProduct.getName());
+    }
+
+    public void addToBalance(double amount) {
+        this.currentBalance += amount;
+    }
+
+    public double getCurrentBalance(){
+        return currentBalance;
+    }
+
+    public void refund() {
+        System.out.println("Refunding: " + currentBalance);
+        resetTransaction();
     }
 }
