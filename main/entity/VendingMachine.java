@@ -1,6 +1,9 @@
 package main.entity;
 
 import main.PaymentType;
+import main.exceptions.PaymentFailedException;
+import main.exceptions.SoldOutException;
+import main.states.DispensingState;
 import main.states.HasMoneyState;
 import main.states.NoMoneyState;
 import main.states.VendingMachineState;
@@ -60,45 +63,33 @@ public class VendingMachine {
             return null;
         }
         ProductShelf shelf = productShelfList.get(shelfId);
+        if (shelf.getProductCount() <= 0){
+            return null;
+        }
         return shelf.getProduct();
     }
 
-    public Product selectProduct(int shelfId){
-
-        if(shelfId < 0 || shelfId > productShelfList.size()){
-            throw new IllegalArgumentException("Invalid shelf id");
+    public void selectProduct(int shelfId){
+        try{
+            currentState.selectProduct(shelfId);
+        } catch (SoldOutException e){
+            System.out.println(e.getMessage());
         }
+    }
 
-        ProductShelf productShelf = productShelfList.get(shelfId);
-
-        if(productShelf.getProductCount() <= 0){
-            System.out.println("Product is sold out");
-            return null;
-        }
-
-        selectedProduct = productShelf.getProduct();
-        System.out.println("Selected product: " + selectedProduct.getName() +
-                "| Price: " + selectedProduct.getPrice());
-        return selectedProduct;
+    public void insertCoin(double amount) {
+        currentState.insertCoin(amount);
     }
 
     public void makePayment(double amount, PaymentType type){
-        boolean paymentSuccess  = type.processPayment(amount);
-        if (paymentSuccess){
-            System.out.println("Payment of $" + amount + " successful using " +
-                    type.getClass().getSimpleName());
-            updateInventoryForSelectedProduct();
-            dispenseProduct();
-
-            selectedProduct = null;
-        }
-        else{
-            System.out.println("Payment of $" + amount + " failed using " +
-                    type.getClass().getSimpleName());
+        try{
+            currentState.makePayment(amount, type);
+        } catch (PaymentFailedException e){
+            System.out.print(e.getMessage());
         }
     }
 
-    private void updateInventoryForSelectedProduct(){
+    public void updateInventoryForSelectedProduct(){
         for (ProductShelf shelf : productShelfList){
             if(shelf.getProduct().equals(selectedProduct)) {
                 shelf.reduceCount(1);
@@ -108,7 +99,7 @@ public class VendingMachine {
     }
 
     public void dispenseProduct(){
-        System.out.println("Dispensing product: " + selectedProduct.getName());
+        currentState.dispenseProduct();
     }
 
     public void addToBalance(double amount) {
@@ -122,5 +113,9 @@ public class VendingMachine {
     public void refund() {
         System.out.println("Refunding: " + currentBalance);
         resetTransaction();
+    }
+
+    public void cancelTransaction(){
+        currentState.cancelTransaction();
     }
 }
